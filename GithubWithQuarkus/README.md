@@ -1,62 +1,100 @@
-# GithubWithQuarkus
+# **GitHub Repository & Branch Fetcher API**
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## **Overview**
+This application is a **REST API** that interacts with GitHub's API to fetch repositories and their branches for a given user. It is built using **Quarkus** and leverages **Mutiny** for reactive programming.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+### **Purpose**
+- Fetch repositories for a given GitHub user.
+- Filter out forked repositories.
+- Retrieve branches for each repository.
+- Return the data as a structured JSON response.
+- Handle errors gracefully, such as non-existing users.
 
-## Running the application in dev mode
+---
 
-You can run your application in dev mode that enables live coding using:
+## How It Works (Step by Step)
 
-```shell script
-./mvnw quarkus:dev
-```
+**User sends a GET request** to:
+   ```
+   http://localhost:8080/github/repos/{username}
+   ```
+where `{username}` is a GitHub username.
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+ **The app calls GitHub's API** to fetch the user's repositories.
 
-## Packaging and running the application
+**Forked repositories are filtered out**, keeping only original repositories.
 
-The application can be packaged using:
+**For each repository**, another API call fetches its branches.
 
-```shell script
-./mvnw package
-```
+**The API responds with JSON**, structured as:
+   ```json
+   [
+       {
+           "repositoryName": "repo-name",
+           "ownerLogin": "username",
+           "branches": [
+               {
+                   "name": "branch-name",
+                   "commit": {
+                       "sha": "commit-sha"
+                   }
+               }
+           ]
+       }
+   ]
+   ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+**If the user does not exist**, an error response is returned:
+   ```json
+   {
+       "status": 404,
+       "message": "User not found"
+   }
+   ```
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+---
 
-If you want to build an _über-jar_, execute the following command:
+## **How to Run the App**
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+### **Prerequisites**
+- Install [Java 17+](https://adoptium.net/)
+- Install [Maven](https://maven.apache.org/)
+- Have an active internet connection (to fetch data from GitHub API)
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+### **Start the Application**
 
-## Creating a native executable
+1. **Clone the repository**
+   ```sh
+   git clone https://github.com/QuarkusRecruitmentTask.git
+   cd QuarkusRecruitmentTask\GithubWithQuarkus
+   ```
 
-You can create a native executable using:
+2. **Run the application using Quarkus**
+   ```sh
+   mvn quarkus:dev
+   ```
+   The app will start at:
+   ```
+   http://localhost:8080
+   ```
 
-```shell script
-./mvnw package -Dnative
-```
+---
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+## **Running Tests**
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+### **Run Tests**
 
-You can then execute your native executable with: `./target/GithubWithQuarkus-1.0.0-SNAPSHOT-runner`
+1. **Execute tests with Maven**
+   ```sh
+   mvn test
+   ```
+---
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+## **Technologies Used**
+- **Quarkus** (Java framework)
+- **Mutiny** (Reactive programming)
+- **REST Assured** (Testing)
+- **GitHub REST API** (Data source)
+- **Maven** (Dependency management)
 
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+---

@@ -1,2 +1,0 @@
-# QuarkusRecruitmentTask
-Atipera recruitment task
